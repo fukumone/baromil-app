@@ -3,190 +3,742 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>利用規約・プライバシーポリシー - バロミル（Baromil）</title>
+    <title>バロミル — 気圧と頭痛の関係がわかる体調記録アプリ（無料）</title>
+    <meta name="description" content="天気が崩れると頭痛やだるさが出る方へ。バロミルはiPhoneの気圧センサーで気圧変動を自動記録し、あなたの体調パターンを分析。完全無料・広告なし・登録不要のiOSアプリです。">
+    <meta property="og:title" content="バロミル — 気圧と頭痛の関係がわかる体調記録アプリ">
+    <meta property="og:description" content="天気が崩れると頭痛やだるさが出る方へ。気圧変動と体調を記録・分析。完全無料・広告なし。">
+    <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary_large_image">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700;900&family=Zen+Maru+Gothic:wght@400;500;700;900&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --brand: #C4958F;
+            --brand-deep: #A87872;
+            --brand-light: #E4CDCA;
+            --brand-ultra: #F0E8E4;
+            --sage: #8BAA7D;
+            --sage-deep: #6B8C5E;
+            --sage-light: #C4D9BC;
+            --text-dark: #3A2A26;
+            --text-mid: #6A5450;
+            --text-light: #9A8480;
+            --bg: #FDFAF8;
+        }
+
         * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        html { scroll-behavior: smooth; }
+
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Hiragino Kaku Gothic ProN", Meiryo, sans-serif;
-            line-height: 1.8;
-            color: #333;
-            background: #fafafa;
-            padding: 20px;
+            font-family: 'Noto Sans JP', sans-serif;
+            color: var(--text-dark);
+            background: var(--bg);
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
         }
-        .container {
-            max-width: 720px;
-            margin: 0 auto;
+
+        /* ===== ナビゲーション ===== */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            padding: 16px 32px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: all 0.3s ease;
+        }
+
+        nav.scrolled {
+            background: rgba(253,250,248,0.92);
+            backdrop-filter: blur(20px);
+            box-shadow: 0 1px 0 rgba(0,0,0,0.06);
+        }
+
+        .nav-logo {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--brand-deep);
+            text-decoration: none;
+            letter-spacing: 0.02em;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 28px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-mid);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: var(--brand-deep);
+        }
+
+        /* ===== ヒーロー ===== */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 120px 32px 80px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -200px;
+            right: -200px;
+            width: 800px;
+            height: 800px;
+            background: radial-gradient(circle, rgba(196,149,143,0.15) 0%, transparent 65%);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .hero::after {
+            content: '';
+            position: absolute;
+            bottom: -100px;
+            left: -200px;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(139,170,125,0.1) 0%, transparent 65%);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .hero-inner {
+            max-width: 1100px;
+            display: flex;
+            align-items: center;
+            gap: 80px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-text {
+            flex: 1;
+        }
+
+        .hero-badge {
+            display: inline-block;
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--sage-deep);
+            background: var(--sage-light);
+            padding: 6px 16px;
+            border-radius: 20px;
+            margin-bottom: 24px;
+            letter-spacing: 0.05em;
+            opacity: 0;
+            animation: fadeUp 0.6s ease forwards;
+        }
+
+        .hero h1 {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            font-size: 44px;
+            font-weight: 900;
+            line-height: 1.35;
+            color: var(--text-dark);
+            margin-bottom: 20px;
+            opacity: 0;
+            animation: fadeUp 0.6s ease 0.1s forwards;
+        }
+
+        .hero h1 span {
+            color: var(--brand-deep);
+        }
+
+        .hero-description {
+            font-size: 16px;
+            line-height: 1.9;
+            color: var(--text-mid);
+            margin-bottom: 36px;
+            max-width: 480px;
+            opacity: 0;
+            animation: fadeUp 0.6s ease 0.2s forwards;
+        }
+
+        .hero-cta {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            opacity: 0;
+            animation: fadeUp 0.6s ease 0.3s forwards;
+        }
+
+        .app-store-badge {
+            height: 52px;
+            transition: transform 0.2s ease;
+        }
+
+        .app-store-badge:hover {
+            transform: scale(1.05);
+        }
+
+        .hero-free {
+            font-size: 13px;
+            color: var(--text-light);
+            font-weight: 500;
+        }
+
+        .hero-phone {
+            flex-shrink: 0;
+            position: relative;
+            opacity: 0;
+            animation: fadeUp 0.8s ease 0.3s forwards;
+        }
+
+        .hero-phone-frame {
+            width: 280px;
+            background: #1a1a1a;
+            border-radius: 40px;
+            padding: 12px;
+            box-shadow:
+                0 40px 80px rgba(0,0,0,0.12),
+                0 16px 32px rgba(0,0,0,0.08);
+        }
+
+        .hero-phone-frame::before {
+            content: '';
+            position: absolute;
+            top: 16px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 84px;
+            height: 26px;
+            background: #1a1a1a;
+            border-radius: 20px;
+            z-index: 10;
+        }
+
+        .hero-phone-screen {
+            border-radius: 30px;
+            overflow: hidden;
             background: #fff;
-            padding: 40px 32px;
-            border-radius: 12px;
-            box-shadow: 0 1px 4px rgba(0,0,0,0.08);
         }
-        h1 {
-            font-size: 1.6em;
-            margin-bottom: 8px;
-            color: #1a1a1a;
+
+        .hero-phone-screen img {
+            width: 100%;
+            display: block;
         }
-        .app-name {
-            font-size: 0.95em;
-            color: #666;
-            margin-bottom: 32px;
+
+        /* ===== セクション共通 ===== */
+        section {
+            padding: 100px 32px;
         }
-        h2 {
-            font-size: 1.25em;
-            margin-top: 40px;
-            margin-bottom: 16px;
-            color: #1a1a1a;
-            border-bottom: 2px solid #ddd;
-            padding-bottom: 8px;
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 64px;
         }
-        h3 {
-            font-size: 1.05em;
-            margin-top: 20px;
-            margin-bottom: 8px;
-            color: #333;
-        }
-        p, li {
-            font-size: 0.95em;
-            margin-bottom: 8px;
-        }
-        ul, ol {
-            padding-left: 1.5em;
+
+        .section-label {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--sage-deep);
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
             margin-bottom: 12px;
         }
-        .updated {
-            font-size: 0.85em;
-            color: #999;
-            margin-top: 32px;
-            text-align: right;
+
+        .section-title {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            font-size: 32px;
+            font-weight: 900;
+            color: var(--text-dark);
+            line-height: 1.4;
         }
-        .contact {
-            background: #f5f5f5;
-            padding: 16px;
-            border-radius: 8px;
-            margin-top: 12px;
+
+        /* ===== 特徴セクション ===== */
+        .features {
+            background: linear-gradient(180deg, var(--bg) 0%, var(--brand-ultra) 100%);
         }
-        .contact a {
-            color: #4a7c59;
+
+        .features-grid {
+            max-width: 960px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 32px;
         }
-        .separator {
-            border: none;
-            border-top: 3px solid #ddd;
-            margin: 48px 0;
+
+        .feature-card {
+            background: rgba(255,255,255,0.8);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 32px 28px;
+            border: 1px solid rgba(196,149,143,0.12);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
-        .nav {
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 32px rgba(0,0,0,0.06);
+        }
+
+        .feature-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 14px;
             display: flex;
-            gap: 16px;
-            margin-bottom: 32px;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            margin-bottom: 18px;
         }
-        .nav a {
-            color: #4a7c59;
+
+        .feature-icon.rose { background: var(--brand-light); }
+        .feature-icon.sage { background: var(--sage-light); }
+
+        .feature-card h3 {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            font-size: 17px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: var(--text-dark);
+        }
+
+        .feature-card p {
+            font-size: 13.5px;
+            line-height: 1.8;
+            color: var(--text-mid);
+        }
+
+        /* ===== スクリーンショット ===== */
+        .screenshots {
+            background: var(--brand-ultra);
+            overflow: hidden;
+        }
+
+        .screenshots-scroll {
+            display: flex;
+            gap: 24px;
+            justify-content: center;
+            flex-wrap: wrap;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .screenshot-item {
+            width: 220px;
+            flex-shrink: 0;
+            background: #1a1a1a;
+            border-radius: 28px;
+            padding: 8px;
+            box-shadow: 0 16px 40px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .screenshot-item:hover {
+            transform: translateY(-8px);
+        }
+
+        .screenshot-item img {
+            width: 100%;
+            border-radius: 22px;
+            display: block;
+        }
+
+        .screenshot-caption {
+            text-align: center;
+            margin-top: 14px;
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--text-light);
+            padding-bottom: 4px;
+        }
+
+        /* ===== プライバシー訴求 ===== */
+        .privacy-section {
+            background: var(--bg);
+        }
+
+        .privacy-banner {
+            max-width: 800px;
+            margin: 0 auto;
+            background: linear-gradient(135deg, #f8f4f2, #f0ece8);
+            border-radius: 24px;
+            padding: 48px;
+            text-align: center;
+            border: 1px solid rgba(196,149,143,0.15);
+        }
+
+        .privacy-banner h3 {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            color: var(--text-dark);
+        }
+
+        .privacy-banner p {
+            font-size: 15px;
+            line-height: 1.8;
+            color: var(--text-mid);
+            margin-bottom: 28px;
+        }
+
+        .privacy-points {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            flex-wrap: wrap;
+        }
+
+        .privacy-point {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--sage-deep);
+        }
+
+        .privacy-point-icon {
+            width: 36px;
+            height: 36px;
+            background: var(--sage-light);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+
+        /* ===== CTA ===== */
+        .cta-section {
+            background: linear-gradient(160deg, var(--brand-ultra) 0%, var(--brand-light) 100%);
+            text-align: center;
+            padding: 100px 32px;
+        }
+
+        .cta-section h2 {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            font-size: 32px;
+            font-weight: 900;
+            color: var(--text-dark);
+            margin-bottom: 16px;
+        }
+
+        .cta-section p {
+            font-size: 15px;
+            color: var(--text-mid);
+            margin-bottom: 36px;
+        }
+
+        /* ===== フッター ===== */
+        footer {
+            background: var(--text-dark);
+            color: rgba(255,255,255,0.6);
+            padding: 48px 32px;
+        }
+
+        .footer-inner {
+            max-width: 800px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 24px;
+        }
+
+        .footer-logo {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            font-size: 18px;
+            font-weight: 700;
+            color: rgba(255,255,255,0.85);
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 24px;
+            list-style: none;
+        }
+
+        .footer-links a {
+            font-size: 13px;
+            color: rgba(255,255,255,0.5);
             text-decoration: none;
-            font-size: 0.95em;
+            transition: color 0.2s;
         }
-        .nav a:hover {
-            text-decoration: underline;
+
+        .footer-links a:hover {
+            color: rgba(255,255,255,0.85);
+        }
+
+        .footer-copy {
+            width: 100%;
+            text-align: center;
+            font-size: 12px;
+            margin-top: 24px;
+            padding-top: 24px;
+            border-top: 1px solid rgba(255,255,255,0.08);
+        }
+
+        .footer-disclaimer {
+            max-width: 800px;
+            margin: 24px auto 0;
+            text-align: center;
+            font-size: 11px;
+            color: rgba(255,255,255,0.5);
+            line-height: 1.7;
+        }
+
+        /* ===== アニメーション ===== */
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(24px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .fade-in {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* ===== レスポンシブ ===== */
+        @media (max-width: 768px) {
+            nav { padding: 12px 20px; }
+            .nav-links { display: none; }
+
+            .hero { padding: 100px 20px 60px; }
+            .hero-inner {
+                flex-direction: column;
+                gap: 48px;
+                text-align: center;
+            }
+            .hero h1 { font-size: 30px; }
+            .hero-description {
+                font-size: 14px;
+                max-width: 100%;
+            }
+            .hero-cta { justify-content: center; }
+            .hero-phone-frame { width: 240px; }
+
+            section { padding: 64px 20px; }
+            .section-title { font-size: 24px; }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .screenshots-scroll { gap: 16px; }
+            .screenshot-item { width: 180px; }
+
+            .privacy-banner { padding: 32px 24px; }
+            .privacy-points { gap: 20px; }
+
+            .footer-inner {
+                flex-direction: column;
+                text-align: center;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>利用規約・プライバシーポリシー</h1>
-        <p class="app-name">バロミル（Baromil）</p>
 
-        <nav class="nav">
-            <a href="#terms">利用規約</a>
-            <a href="#privacy">プライバシーポリシー</a>
-        </nav>
-
-        <!-- ==================== 利用規約 ==================== -->
-
-        <h2 id="terms">利用規約</h2>
-        <p>最終更新日: 2026年3月26日</p>
-
-        <h3>第1条（適用）</h3>
-        <p>本利用規約（以下「本規約」）は、バロミル（以下「本アプリ」）の利用に関する条件を定めるものです。ユーザーは本アプリを利用することにより、本規約に同意したものとみなされます。</p>
-
-        <h3>第2条（本アプリの性質）</h3>
-        <p>本アプリは、気圧データと体調記録を可視化するためのツールです。本アプリは医療機器ではなく、医学的な診断、治療、予防を目的としたものではありません。体調に不安がある場合は、必ず医師またはその他の医療専門家にご相談ください。</p>
-
-        <h3>第3条（利用条件）</h3>
-        <ol>
-            <li>ユーザーは自己の責任において本アプリを利用するものとします。</li>
-            <li>ユーザーが未成年者の場合、法定代理人の同意を得た上で本アプリを利用してください。</li>
-        </ol>
-
-        <h3>第4条（禁止事項）</h3>
-        <p>ユーザーは以下の行為を行ってはなりません。</p>
-        <ol>
-            <li>本アプリの情報を医学的助言として第三者に提供する行為</li>
-            <li>本アプリのリバースエンジニアリング、逆コンパイル、逆アセンブル</li>
-            <li>本アプリの運営を妨害する行為</li>
-            <li>その他、開発者が不適切と判断する行為</li>
-        </ol>
-
-        <h3>第5条（免責事項）</h3>
-        <ol>
-            <li>開発者は、本アプリが表示する情報の正確性、完全性、有用性について一切保証しません。</li>
-            <li>本アプリの利用により生じた損害について、開発者は一切の責任を負いません。</li>
-            <li>本アプリが表示する情報は、気圧センサーのデータとユーザーの記録にもとづく統計的な傾向であり、医学的な助言として利用することはできません。</li>
-        </ol>
-
-        <h3>第6条（サービスの変更・終了）</h3>
-        <p>開発者は、事前の通知なく本アプリの内容を変更、またはサービスを終了することがあります。</p>
-
-        <h3>第7条（規約の変更）</h3>
-        <p>開発者は、必要に応じて本規約を変更できるものとします。変更後の規約は、本アプリ内に掲示した時点で効力を生じます。</p>
-
-        <h3>第8条（準拠法・管轄裁判所）</h3>
-        <p>本規約は日本法に準拠し、本規約に関する紛争は東京地方裁判所を第一審の専属的合意管轄裁判所とします。</p>
-
-        <hr class="separator">
-
-        <!-- ==================== プライバシーポリシー ==================== -->
-
-        <h2 id="privacy">プライバシーポリシー</h2>
-        <p>最終更新日: 2026年3月26日</p>
-
-        <p>本プライバシーポリシーは、バロミル（以下「本アプリ」）におけるユーザー情報の取り扱いについて説明します。</p>
-
-        <h3>1. 収集する情報</h3>
-        <p>本アプリは以下の情報を取得します。</p>
-        <ul>
-            <li><strong>位置情報</strong>：天気予報（WeatherKit）の取得のために使用します。</li>
-            <li><strong>体調記録</strong>：ユーザーが入力した体調レベル、症状、トリガー、服薬記録を端末内に保存します。</li>
-            <li><strong>気圧データ</strong>：端末の気圧センサーから取得したデータを端末内に保存します。</li>
+    <!-- ナビゲーション -->
+    <nav id="nav">
+        <a href="#" class="nav-logo">バロミル</a>
+        <ul class="nav-links">
+            <li><a href="#features">機能</a></li>
+            <li><a href="#screenshots">スクリーンショット</a></li>
+            <li><a href="#download">ダウンロード</a></li>
+            <li><a href="terms.html">利用規約</a></li>
+            <li><a href="privacy-policy.html">プライバシーポリシー</a></li>
+            <li><a href="contact.html">お問い合わせ</a></li>
         </ul>
+    </nav>
 
-        <h3>2. 情報の保存場所</h3>
-        <p>すべてのデータはユーザーの端末内にのみ保存されます。外部サーバーへの送信は行いません。</p>
-
-        <h3>3. 位置情報の利用</h3>
-        <p>位置情報は、Apple WeatherKitを通じて天気予報を取得するためにのみ使用します。この際、Appleのサーバーに位置情報が送信されますが、本アプリの開発者がこれを取得・保存することはありません。</p>
-
-        <h3>4. 第三者への提供</h3>
-        <p>本アプリはユーザーの個人情報を第三者に提供しません。</p>
-
-        <h3>5. データの削除</h3>
-        <p>ユーザーは本アプリを端末から削除することで、すべてのデータを消去できます。また、アプリ内の設定画面からデータを個別に削除することもできます。</p>
-
-        <h3>6. AI機能</h3>
-        <p>本アプリは、iOS 26以降の端末でApple FoundationModelsを利用したAI分析機能を提供します。AI処理はすべて端末内（オンデバイス）で完結し、データが外部サーバーに送信されることはありません。AI機能の出力は統計的な傾向にもとづく参考情報であり、医学的な助言ではありません。</p>
-
-        <h3>7. 分析ツール・広告</h3>
-        <p>本アプリは、分析ツールや広告SDKを使用していません。</p>
-
-        <h3>8. お子様のプライバシー</h3>
-        <p>本アプリは特定の年齢層を対象としていません。13歳未満のお子様から意図的に個人情報を収集することはありません。</p>
-
-        <h3>9. プライバシーポリシーの変更</h3>
-        <p>本ポリシーは必要に応じて更新される場合があります。重要な変更がある場合は、アプリ内で通知します。</p>
-
-        <h3>10. お問い合わせ</h3>
-        <div class="contact">
-            <p>本ポリシーに関するお問い合わせは、App Storeのアプリページからご連絡ください。</p>
+    <!-- ヒーロー -->
+    <section class="hero">
+        <div class="hero-inner">
+            <div class="hero-text">
+                <div class="hero-badge">完全無料・広告なし・登録不要</div>
+                <h1><span>その頭痛、気圧のせいかも。</span><br>記録してわかる、あなたの体調パターン。</h1>
+                <p class="hero-description">
+                    雨の前に体調が崩れやすい、季節の変わり目がつらい——<br>
+                    そんな「なんとなく」の不調を、気圧データと一緒に記録。<br>
+                    続けるうちに、自分だけの体調パターンが見えてきます。
+                </p>
+                <p style="font-size: 12px; color: var(--text-light); margin-bottom: 24px; opacity: 0; animation: fadeUp 0.6s ease 0.25s forwards;">※本アプリは医療機器ではありません。表示内容は参考情報です。</p>
+                <div class="hero-cta">
+                    <a href="https://apps.apple.com/app/id6761166495" target="_blank">
+                        <img src="https://tools.applemediaservices.com/api/badges/download-on-the-app-store/black/ja-jp?size=250x83" alt="App Storeからダウンロード" class="app-store-badge">
+                    </a>
+                    <span class="hero-free">無料ですぐ始められます（iOS 17以降）</span>
+                </div>
+            </div>
+            <div class="hero-phone">
+                <div class="hero-phone-frame">
+                    <div class="hero-phone-screen">
+                        <img src="images/home_weather_forecast.jpeg" alt="バロミル ホーム画面">
+                    </div>
+                </div>
+            </div>
         </div>
+    </section>
 
-        <p class="updated">最終更新日：2026年3月26日</p>
-    </div>
+    <!-- 機能 -->
+    <section class="features" id="features">
+        <div class="section-header fade-in">
+            <div class="section-label">Features</div>
+            <h2 class="section-title">気圧と体調の関係を知るための機能</h2>
+        </div>
+        <div class="features-grid">
+            <div class="feature-card fade-in">
+                <div class="feature-icon sage">✏️</div>
+                <h3>かんたん体調記録</h3>
+                <p>体調をワンタップで記録。頭痛・めまい・だるさなど12の症状や服薬メモも残せます。</p>
+            </div>
+            <div class="feature-card fade-in">
+                <div class="feature-icon rose">📊</div>
+                <h3>リアルタイム気圧計測</h3>
+                <p>iPhoneの気圧センサーから、今いる場所の気圧をピンポイントで計測します。</p>
+            </div>
+            <div class="feature-card fade-in">
+                <div class="feature-icon sage">🤖</div>
+                <h3>AI記録まとめ</h3>
+                <p>記録を続けると、AIがあなたの体調パターンをわかりやすく要約。処理はすべて端末内で完結し、データは外に出ません。</p>
+            </div>
+            <div class="feature-card fade-in">
+                <div class="feature-icon rose">📈</div>
+                <h3>相関グラフ</h3>
+                <p>気圧の変動と体調を重ねて表示。「気圧が下がった日に頭痛が多い」といった傾向がひと目でわかります。</p>
+            </div>
+            <div class="feature-card fade-in">
+                <div class="feature-icon sage">📅</div>
+                <h3>カレンダー</h3>
+                <p>月別の体調一覧をカレンダーで確認。季節のバナーと天気アイコンで振り返りもかんたん。</p>
+            </div>
+            <div class="feature-card fade-in">
+                <div class="feature-icon rose">⌚</div>
+                <h3>ウィジェット</h3>
+                <p>ホーム画面やロック画面で気圧をいつでもチェック。Dynamic Islandで急変化もお知らせ。</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- スクリーンショット -->
+    <section class="screenshots" id="screenshots">
+        <div class="section-header fade-in">
+            <div class="section-label">Screenshots</div>
+            <h2 class="section-title">シンプルで、やさしいデザイン</h2>
+        </div>
+        <div class="screenshots-scroll">
+            <div class="screenshot-item fade-in">
+                <img src="images/home_weather_forecast.jpeg" alt="ホーム画面">
+                <div class="screenshot-caption">ホーム</div>
+            </div>
+            <div class="screenshot-item fade-in">
+                <img src="images/home_pressure_realtime.jpeg" alt="気圧リアルタイム">
+                <div class="screenshot-caption">気圧 + 天気</div>
+            </div>
+            <div class="screenshot-item fade-in">
+                <img src="images/calendar_monthly.png" alt="カレンダー">
+                <div class="screenshot-caption">カレンダー</div>
+            </div>
+            <div class="screenshot-item fade-in">
+                <img src="images/analysis_pattern_ai.jpeg" alt="AI分析">
+                <div class="screenshot-caption">AI分析</div>
+            </div>
+            <div class="screenshot-item fade-in">
+                <img src="images/weather_5day_forecast.jpeg" alt="5日間予報">
+                <div class="screenshot-caption">天気予報</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- プライバシー -->
+    <section class="privacy-section fade-in">
+        <div class="privacy-banner">
+            <h3>あなたのデータは、あなたのもの</h3>
+            <p>バロミルはすべてのデータを端末内に保存します。<br>外部サーバーへの送信は一切ありません。</p>
+            <div class="privacy-points">
+                <div class="privacy-point">
+                    <div class="privacy-point-icon">🔒</div>
+                    記録データは端末内のみ
+                </div>
+                <div class="privacy-point">
+                    <div class="privacy-point-icon">🚫</div>
+                    広告なし
+                </div>
+                <div class="privacy-point">
+                    <div class="privacy-point-icon">📱</div>
+                    登録不要ですぐ使える
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="cta-section" id="download">
+        <h2 class="fade-in">「あの日、なぜ調子が悪かったのか」——<br>記録が教えてくれます。</h2>
+        <p class="fade-in">無料・広告なし・登録不要。今日の体調から記録を始めてみませんか？</p>
+        <div class="fade-in">
+            <a href="https://apps.apple.com/app/id6761166495" target="_blank">
+                <img src="https://tools.applemediaservices.com/api/badges/download-on-the-app-store/black/ja-jp?size=250x83" alt="App Storeからダウンロード" class="app-store-badge">
+            </a>
+        </div>
+    </section>
+
+    <!-- フッター -->
+    <footer>
+        <div class="footer-inner">
+            <div class="footer-logo">バロミル</div>
+            <ul class="footer-links">
+                <li><a href="terms.html">利用規約</a></li>
+                <li><a href="privacy-policy.html">プライバシーポリシー</a></li>
+                <li><a href="contact.html">お問い合わせ</a></li>
+                <li><a href="https://apps.apple.com/app/id6761166495" target="_blank">App Store</a></li>
+            </ul>
+            <div class="footer-copy">&copy; 2026 Toru Fukui</div>
+        </div>
+        <div class="footer-disclaimer">
+            本アプリは医療機器ではなく、医学的な診断・治療を提供するものではありません。<br>
+            表示される情報は統計的な傾向にもとづく参考情報です。体調に不安がある場合は医師にご相談ください。
+        </div>
+    </footer>
+
+    <script>
+        // ナビゲーションスクロール効果
+        window.addEventListener('scroll', () => {
+            document.getElementById('nav').classList.toggle('scrolled', window.scrollY > 40);
+        });
+
+        // フェードインアニメーション
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+    </script>
+
 </body>
 </html>
